@@ -73,8 +73,18 @@ const skillList: Skill[] = skills;
 const skill = skillList.find((entry: Skill) => entry.pathSlug === pathSlug);
 const children = skillList.filter((entry: Skill) => entry.pathSlug.startsWith(`${pathSlug}/`));
 const isGroupPage = !skill && children.length > 0;
-
 const segments = pathSlug.split("/");
+const groupOwner = segments[0] ?? "";
+const groupOwnerSkill = children.find(
+  (entry: Skill) => (entry.sourceKey ?? entry.pathSlug.split("/")[0]) === groupOwner,
+);
+const groupTitle =
+  groupOwnerSkill?.sourceLabel ?? titleize(segments[segments.length - 1] ?? "Skills");
+const showOwnerProfile = isGroupPage && segments.length === 1 && Boolean(groupOwner);
+const ownerAvatarUrl = showOwnerProfile
+  ? `https://github.com/${groupOwner}.png?size=80`
+  : "";
+const ownerGithubUrl = showOwnerProfile ? `https://github.com/${groupOwner}` : "";
 const breadcrumbItems = [
   { label: "Home", href: "/" },
   { label: "Skills", href: "/skills" },
@@ -155,9 +165,40 @@ const commandSegments = [
           isGroupPage ? (
             <>
               <div class="px-4 sm:px-0">
-                <h1 class="text-parchment-900 text-3xl font-medium tracking-tight">
-                  {titleize(segments[segments.length - 1] ?? "Skills")}
-                </h1>
+                {showOwnerProfile ? (
+                  <div class="flex items-center gap-3">
+                    <a
+                      href={ownerGithubUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="inline-flex rounded-full focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                      aria-label={`Open ${groupTitle} GitHub profile`}
+                    >
+                      <img
+                        src={ownerAvatarUrl}
+                        alt={`${groupTitle} avatar`}
+                        width="32"
+                        height="32"
+                        loading="lazy"
+                        class="size-8 rounded-full border border-neutral-200"
+                      />
+                    </a>
+                    <h1 class="text-parchment-900 text-3xl font-medium tracking-tight">
+                      <a
+                        href={ownerGithubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="hover:text-parchment-700 transition-colors"
+                      >
+                        {groupTitle}
+                      </a>
+                    </h1>
+                  </div>
+                ) : (
+                  <h1 class="text-parchment-900 text-3xl font-medium tracking-tight">
+                    {groupTitle}
+                  </h1>
+                )}
               </div>
 
               <div class="grid gap-4 px-4 sm:grid-cols-2 sm:px-0">
