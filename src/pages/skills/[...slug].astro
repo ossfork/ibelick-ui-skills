@@ -122,6 +122,10 @@ const skill =
       )
     : undefined);
 
+if (skill && pathSlug !== skill.pathSlug) {
+  return Astro.redirect(`/skills/${skill.pathSlug}`, 301);
+}
+
 const userChildren =
   !topic && segments.length === 1
     ? skillList.filter((entry: Skill) =>
@@ -230,6 +234,11 @@ const skillTopicSuggestions = skill
       .slice(0, 8)
   : [];
 
+const isInvalidSkillsRoute = !skill && !isGroupPage;
+if (isInvalidSkillsRoute) {
+  Astro.response.status = 404;
+}
+
 const siteOrigin = Astro.site ?? new URL("https://www.ui-skills.com");
 const pageUrl = new URL(`/skills/${canonicalSkillPath}`, siteOrigin).toString();
 const shorten = (value: string, max = 160) =>
@@ -325,6 +334,8 @@ const breadcrumbStructuredData = {
 
 const pageTitle = skill
   ? buildSkillTitle(skill)
+  : isInvalidSkillsRoute
+    ? "Skill Page Not Found | UI Skills"
   : isGroupPage
     ? isTopicGroup && topic
       ? buildTopicTitle(topic.label)
@@ -333,6 +344,8 @@ const pageTitle = skill
 
 const pageDescription = skill
   ? buildSkillDescription(skill)
+  : isInvalidSkillsRoute
+    ? "The requested skills route does not match any skill, topic, or source page."
   : isGroupPage
     ? isTopicGroup && topic
       ? buildTopicDescription(topic.label, topic.description, children.length)
@@ -429,6 +442,7 @@ const commandSegments = [
     : breadcrumbStructuredData}
   title={pageTitle}
   description={pageDescription}
+  robots={isInvalidSkillsRoute ? "noindex,follow" : undefined}
 >
   <div
     class="relative flex min-h-dvh flex-col items-center justify-start px-0 sm:px-4"
@@ -626,6 +640,27 @@ const commandSegments = [
                 </div>
               ) : null}
             </>
+          ) : null
+        }
+
+        {
+          isInvalidSkillsRoute ? (
+            <div class="px-4 sm:px-0">
+              <h1 class="text-parchment-900 text-3xl font-medium tracking-tight">
+                Skill page not found
+              </h1>
+              <p class="text-parchment-500 mt-3 text-[15px]">
+                The route you requested does not match a skill, topic, or source page.
+              </p>
+              <div class="mt-5">
+                <a
+                  href="/skills"
+                  class="text-parchment-700 hover:text-parchment-900 text-sm font-medium underline underline-offset-4"
+                >
+                  Browse all skills
+                </a>
+              </div>
+            </div>
           ) : null
         }
       </div>
