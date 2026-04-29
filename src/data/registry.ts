@@ -243,6 +243,97 @@ const registrySource: RegistrySourceSkill[] = [
       "Browser automation CLI for AI agents for navigation, form actions, extraction, screenshots, QA, and app testing.",
   },
   {
+    slug: "frontend-ui-engineering",
+    user: "addyosmani",
+    repo: "agent-skills",
+    rawUrl:
+      "https://raw.githubusercontent.com/addyosmani/agent-skills/main/skills/frontend-ui-engineering/SKILL.md",
+    githubUrl:
+      "https://github.com/addyosmani/agent-skills/blob/main/skills/frontend-ui-engineering/SKILL.md",
+    name: "frontend-ui-engineering",
+    topics: ["frontend", "systems", "accessibility"],
+    description:
+      "Frontend UI engineering guidance covering component architecture, responsive design, accessibility, and maintainable implementation patterns.",
+  },
+  {
+    slug: "react-best-practices",
+    user: "vercel-labs",
+    repo: "agent-skills",
+    rawUrl:
+      "https://raw.githubusercontent.com/vercel-labs/agent-skills/main/skills/react-best-practices/SKILL.md",
+    githubUrl:
+      "https://github.com/vercel-labs/agent-skills/blob/main/skills/react-best-practices/SKILL.md",
+    name: "vercel-react-best-practices",
+    topics: ["frontend", "performance", "systems"],
+    description:
+      "Vercel React best practices for rendering performance, bundle efficiency, and scalable component architecture.",
+  },
+  {
+    slug: "react-router-framework-mode",
+    user: "remix-run",
+    repo: "agent-skills",
+    rawUrl:
+      "https://raw.githubusercontent.com/remix-run/agent-skills/main/skills/react-router-framework-mode/SKILL.md",
+    githubUrl:
+      "https://github.com/remix-run/agent-skills/blob/main/skills/react-router-framework-mode/SKILL.md",
+    name: "react-router-framework-mode",
+    topics: ["frontend", "architecture", "interaction"],
+    description:
+      "React Router framework-mode patterns for loaders, actions, middleware, route modules, and full-stack rendering flows.",
+  },
+  {
+    slug: "svelte-code-writer",
+    user: "sveltejs",
+    repo: "ai-tools",
+    rawUrl:
+      "https://raw.githubusercontent.com/sveltejs/ai-tools/main/plugins/claude/svelte/skills/svelte-code-writer/SKILL.md",
+    githubUrl:
+      "https://github.com/sveltejs/ai-tools/blob/main/plugins/claude/svelte/skills/svelte-code-writer/SKILL.md",
+    name: "svelte-code-writer",
+    topics: ["frameworks", "frontend", "tooling"],
+    description:
+      "Official Svelte code-writing skill focused on modern Svelte patterns, component composition, and production-ready implementations.",
+  },
+  {
+    slug: "playwright-cli",
+    user: "microsoft",
+    repo: "playwright-cli",
+    rawUrl:
+      "https://raw.githubusercontent.com/microsoft/playwright-cli/main/skills/playwright-cli/SKILL.md",
+    githubUrl:
+      "https://github.com/microsoft/playwright-cli/blob/main/skills/playwright-cli/SKILL.md",
+    name: "playwright-cli",
+    topics: ["testing", "tooling", "frontend"],
+    description:
+      "Official Playwright CLI skill for browser automation, test generation, tracing, and session-driven end-to-end testing workflows.",
+  },
+  {
+    slug: "web-quality-audit",
+    user: "addyosmani",
+    repo: "web-quality-skills",
+    rawUrl:
+      "https://raw.githubusercontent.com/addyosmani/web-quality-skills/main/skills/web-quality-audit/SKILL.md",
+    githubUrl:
+      "https://github.com/addyosmani/web-quality-skills/blob/main/skills/web-quality-audit/SKILL.md",
+    name: "web-quality-audit",
+    topics: ["performance", "accessibility", "testing"],
+    description:
+      "Web quality auditing skill for Lighthouse-style analysis across performance, accessibility, best practices, and SEO signals.",
+  },
+  {
+    slug: "swiss-design",
+    user: "zeke",
+    repo: "swiss-design-skill",
+    rawUrl:
+      "https://raw.githubusercontent.com/zeke/swiss-design-skill/main/swiss-design/SKILL.md",
+    githubUrl:
+      "https://github.com/zeke/swiss-design-skill/blob/main/swiss-design/SKILL.md",
+    name: "swiss-design",
+    topics: ["visual", "typography", "systems"],
+    description:
+      "Swiss design system skill focused on grid discipline, typography hierarchy, and clean editorial interface composition.",
+  },
+  {
     slug: "react-native-best-practices",
     user: "callstackincubator",
     repo: "agent-skills",

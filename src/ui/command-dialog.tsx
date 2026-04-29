@@ -345,7 +345,7 @@ export function CommandDialog({ items }: CommandDialogProps) {
               onChange={onInputChange}
               onKeyDown={onInputKeyDown}
               placeholder="Search skills..."
-              className="text-parchment-900 placeholder:text-parchment-400 w-full bg-transparent text-[15px] outline-none"
+              className="text-parchment-900 placeholder:text-parchment-400 w-full bg-transparent text-base outline-none sm:text-[15px]"
               role="combobox"
               aria-expanded={open}
               aria-controls="skills-search-results"
