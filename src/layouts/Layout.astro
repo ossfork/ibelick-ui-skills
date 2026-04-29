@@ -11,18 +11,47 @@ type Props = {
   title?: string;
   description?: string;
   robots?: string;
+  ogImage?: string;
+  ogImageAlt?: string;
+  twitterImage?: string;
+  twitterImageAlt?: string;
+  twitterSite?: string;
+  ogType?: string;
+  siteName?: string;
 };
 
-const { llmsPath, structuredData, title, description, robots } = Astro.props as Props;
+const {
+  llmsPath,
+  structuredData,
+  title,
+  description,
+  robots,
+  ogImage,
+  ogImageAlt,
+  twitterImage,
+  twitterImageAlt,
+  twitterSite,
+  ogType,
+  siteName,
+} = Astro.props as Props;
 const currentYear = new Date().getFullYear();
 const canonicalUrl = new URL(
   Astro.url.pathname,
-  Astro.site ?? "https://ui-skills.com",
+  Astro.site ?? "https://www.ui-skills.com",
 );
 const pageTitle = title ?? "UI Skills - Skills for Design Engineers";
 const pageDescription = description ?? "Skills for Design Engineers.";
 const robotsContent =
-  robots ?? "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
+  robots ??
+  "index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1";
+const ogImageUrl = ogImage ?? "https://www.ui-skills.com/UI-OG.png";
+const twitterImageUrl = twitterImage ?? "https://www.ui-skills.com/UI-OG-X.png";
+const ogImageAltText =
+  ogImageAlt ?? "UI Skills directory preview for design engineers";
+const twitterImageAltText = twitterImageAlt ?? "UI Skills social preview image";
+const ogTypeValue = ogType ?? "website";
+const siteNameValue = siteName ?? "UI Skills";
+const twitterSiteHandle = twitterSite ?? "@ibelick";
 const githubStars = await getGithubStars("ibelick/ui-skills", "7,000+");
 const skillRawModules = import.meta.glob<string>("/skills/*/SKILL.md", {
   eager: true,
@@ -35,15 +64,26 @@ const skillRawBySlug = new Map(
     raw,
   ]),
 );
+const buildSearchContent = (skill: (typeof skills)[number]) => {
+  const raw = skillRawBySlug.get(skill.slug) ?? "";
+  const text = (skill.description ?? "") + " " + raw;
+
+  return text
+    .replace(/^---[\s\S]*?---/, " ")
+    .replace(/`{1,3}[\s\S]*?`{1,3}/g, " ")
+    .replace(/<\/script/gi, "<\\/script")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 2000);
+};
+
 const commandItems = skills.map((skill) => ({
   slug: skill.slug,
   pathSlug: skill.pathSlug,
   label: skill.label,
   sourceLabel: skill.sourceLabel,
   description: skill.description,
-  searchContent: skill.isRegistry
-    ? (skill.description ?? "")
-    : (skillRawBySlug.get(skill.slug) ?? skill.description ?? ""),
+  searchContent: skill.isRegistry ? (skill.description ?? "") : buildSearchContent(skill),
 }));
 ---
 
@@ -61,12 +101,16 @@ const commandItems = skills.map((skill) => ({
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={pageDescription} />
     <meta property="og:url" content={canonicalUrl.href} />
-    <meta property="og:image" content="https://ui-skills.com/UI-OG.png" />
-    <meta property="og:type" content="website" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content={ogImageAltText} />
+    <meta property="og:type" content={ogTypeValue} />
+    <meta property="og:site_name" content={siteNameValue} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={pageTitle} />
     <meta name="twitter:description" content={pageDescription} />
-    <meta name="twitter:image" content="https://ui-skills.com/UI-OG-X.png" />
+    <meta name="twitter:image" content={twitterImageUrl} />
+    <meta name="twitter:image:alt" content={twitterImageAltText} />
+    <meta name="twitter:site" content={twitterSiteHandle} />
     {
       structuredData ? (
         <script
@@ -128,43 +172,6 @@ const commandItems = skills.map((skill) => ({
           </Button>
         </div>
       </header>
-      <!-- <div
-        class="pointer-events-none absolute inset-0 mask-t-from-60% mask-t-to-100% mask-b-from-90% mask-b-to-100%"
-        aria-hidden="true"
-      >
-        <svg class="h-full w-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern
-              id="small-grid"
-              width="10"
-              height="10"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 10 0 L 0 0 0 10"
-                fill="none"
-                stroke="#78716c"
-                stroke-opacity="0.1"
-                stroke-width="0.5"></path>
-            </pattern>
-            <pattern
-              id="grid"
-              width="50"
-              height="50"
-              patternUnits="userSpaceOnUse"
-            >
-              <rect width="50" height="50" fill="url(#small-grid)"></rect>
-              <path
-                d="M 50 0 L 0 0 0 50"
-                fill="none"
-                stroke="#78716c"
-                stroke-opacity="0.2"
-                stroke-width="1"></path>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)"></rect>
-        </svg>
-      </div> -->
       <slot />
       <footer
         class="text-parchment-400 flex w-full items-center justify-center gap-3 px-4 pt-24 pb-6 text-center text-sm font-medium sm:px-0"

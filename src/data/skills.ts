@@ -1,6 +1,6 @@
 import type { MarkdownInstance } from "astro";
 
-import { registry } from "./registry";
+import { registry, type TopicSlug } from "./registry";
 
 type SkillFrontmatter = {
   name?: string;
@@ -17,6 +17,14 @@ export type Skill = {
   label: string;
   description?: string;
   isRegistry?: boolean;
+  topics?: TopicSlug[];
+};
+
+const localSkillTopics: Record<string, TopicSlug[]> = {
+  "ibelick/baseline-ui": ["systems", "visual", "craft"],
+  "ibelick/fixing-accessibility": ["accessibility", "testing", "frontend"],
+  "ibelick/fixing-metadata": ["architecture", "frontend", "tooling"],
+  "ibelick/fixing-motion-performance": ["motion", "performance", "frontend"],
 };
 
 const skillModules = import.meta.glob<MarkdownInstance<SkillFrontmatter>>(
@@ -49,6 +57,7 @@ const localSkills: Skill[] = Object.entries(skillModules).map(
       name,
       label: module.frontmatter.label ?? titleize(name),
       description: module.frontmatter.description,
+      topics: localSkillTopics[`ibelick/${slug}`] ?? [],
     };
   },
 );
@@ -63,6 +72,7 @@ const registrySkills: Skill[] = registry
     name: s.name ?? s.slug,
     label: titleize(s.name ?? s.slug),
     description: s.description,
+    topics: s.topics ?? [],
     isRegistry: true,
   }));
 

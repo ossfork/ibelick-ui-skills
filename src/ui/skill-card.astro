@@ -16,11 +16,13 @@ const { href, slug, description, ownerLabel, avatarUrl } = Astro.props as Props;
 >
   <div class="flex flex-col gap-3">
     <div class="text-parchment-900 font-[450] tracking-tight">{slug}</div>
-    {description ? (
-      <div class="text-parchment-500 line-clamp-3 text-[14px] leading-snug">
-        {description}
-      </div>
-    ) : null}
+    {
+      description ? (
+        <div class="text-parchment-500 line-clamp-3 text-[14px] leading-snug">
+          {description}
+        </div>
+      ) : null
+    }
     {
       ownerLabel && avatarUrl ? (
         <div class="mt-1 flex items-center gap-2">

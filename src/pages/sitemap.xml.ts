@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import { skills, type Skill } from "../data/skills";
 
-const SITE_URL = "https://ui-skills.com";
+const SITE_URL = "https://www.ui-skills.com";
 
 const escapeXml = (value: string) =>
   value
@@ -10,6 +10,11 @@ const escapeXml = (value: string) =>
     .replace(/>/g, "&gt;")
     .replace(/\"/g, "&quot;")
     .replace(/'/g, "&apos;");
+
+const buildTopicRoutes = (allSkills: Skill[]) =>
+  Array.from(new Set(allSkills.flatMap((skill) => skill.topics ?? []))).map(
+    (topic) => `/skills/${topic}`,
+  );
 
 const buildGroupPaths = (allSkills: Skill[]) =>
   Array.from(
@@ -29,17 +34,19 @@ const buildGroupPaths = (allSkills: Skill[]) =>
 
 export const GET: APIRoute = ({ site }) => {
   const origin = site?.origin ?? SITE_URL;
-  const lastmod = new Date().toISOString();
 
-  const staticRoutes = ["/", "/skills"];
+  const staticRoutes = ["/", "/skills", "/skills/topics"];
+  const topicRoutes = buildTopicRoutes(skills);
   const groupRoutes = buildGroupPaths(skills).map((path) => `/skills/${path}`);
   const skillRoutes = skills.map((skill) => `/skills/${skill.pathSlug}`);
-  const allRoutes = Array.from(new Set([...staticRoutes, ...groupRoutes, ...skillRoutes]));
+  const allRoutes = Array.from(
+    new Set([...staticRoutes, ...topicRoutes, ...groupRoutes, ...skillRoutes]),
+  );
 
   const urlset = allRoutes
     .map((route) => {
       const loc = new URL(route, origin).toString();
-      return `<url><loc>${escapeXml(loc)}</loc><lastmod>${lastmod}</lastmod></url>`;
+      return `<url><loc>${escapeXml(loc)}</loc></url>`;
     })
     .join("");
 

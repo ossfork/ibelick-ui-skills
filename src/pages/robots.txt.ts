@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 
-const SITE_URL = "https://ui-skills.com";
+const SITE_URL = "https://www.ui-skills.com";
 
 export const GET: APIRoute = ({ site }) => {
   const origin = site?.origin ?? SITE_URL;

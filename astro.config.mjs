@@ -4,10 +4,13 @@ import tailwindcss from "@tailwindcss/vite";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://ui-skills.com",
-	integrations: [react()],
+  site: "https://www.ui-skills.com",
+  integrations: [react()],
   vite: {
     plugins: [tailwindcss()],
     assetsInclude: ["**/*.sh"],
+    resolve: {
+      dedupe: ["react", "react-dom"],
+    },
   },
 });
