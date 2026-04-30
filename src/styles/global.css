@@ -48,3 +48,38 @@
 .prose :where(code):not( :where([class~="not-prose"], [class~="not-prose"] *))::after {
   content: "";
 }
+
+.prose :where(a):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.prose :where(li, p):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  overflow-wrap: anywhere;
+}
+
+.prose :where(pre):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  border: 0;
+  background: transparent;
+  overscroll-behavior-x: contain;
+}
+
+.prose :where(pre.astro-code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  border: 0;
+  background-color: #24292e !important;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: hidden;
+  background-clip: padding-box;
+  box-shadow: inset 0 0 0 100vmax #24292e;
+}
+
+.prose :where(pre.astro-code code):not(:where([class~="not-prose"], [class~="not-prose"] *)) {
+  background: transparent;
+}
+
+.prose :where(pre.astro-code .line, pre.astro-code span):not(
+    :where([class~="not-prose"], [class~="not-prose"] *)
+  ) {
+  background: transparent !important;
+}
