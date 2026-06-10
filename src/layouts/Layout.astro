@@ -2,6 +2,7 @@
 import "../styles/global.css";
 import firaMono400Woff2 from "@fontsource/fira-mono/files/fira-mono-latin-400-normal.woff2?url";
 import Button from "../ui/button.astro";
+import NewsletterInput from "../ui/newsletter-input";
 import { getGithubStars } from "../lib/github-stars";
 import { skills } from "../data/skills";
 import { CommandDialog } from "../ui/command-dialog";
@@ -203,6 +204,7 @@ const commandItems = skills.map((skill) => ({
       <main id="main-content">
         <slot />
       </main>
+      <NewsletterInput client:load />
       <footer
         class="text-parchment-400 flex w-full items-center justify-center gap-3 px-4 pt-24 pb-6 text-center text-sm font-medium sm:px-0"
       >
