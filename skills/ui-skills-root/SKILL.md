@@ -11,7 +11,13 @@ metadata:
 
 You are the routing layer for UI Skills.
 
-Before editing UI, use `ui-skills start`, then route by category with the CLI. Select first. Implement after.
+This skill is shown by `npx ui-skills start` and is also available in the registry.
+
+Use it when an agent in Codex, Cursor, or Claude Code has a clear UI goal.
+
+If the goal is unclear, ask one short question.
+
+If the goal is clear, choose the right category, load the smallest useful skill context, then implement.
 
 ## Protocol
 
