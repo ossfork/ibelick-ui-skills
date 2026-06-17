@@ -1108,6 +1108,19 @@ const registrySource: RegistrySourceSkill[] = [
       "Create animation-rich HTML presentations from scratch or convert PPT/PPTX files into polished web slides.",
   },
   {
+    slug: "slide-wright",
+    user: "arifszn",
+    repo: "slide-wright",
+    rawUrl:
+      "https://raw.githubusercontent.com/arifszn/slide-wright/main/SKILL.md",
+    githubUrl:
+      "https://github.com/arifszn/slide-wright/blob/main/SKILL.md",
+    name: "slide-wright",
+    topics: ["video", "visual", "craft"],
+    description:
+      "Create beautiful, animated web presentations from a topic, rough notes, or an outline. Generates a custom theme and a short two-slide preview, then builds the full deck only once the user confirms the direction. Use when the user wants to make slides, a presentation, a talk deck, or a pitch deck.",
+  },
+  {
     slug: "shadcn",
     user: "shadcn-ui",
     repo: "ui",
