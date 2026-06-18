@@ -210,28 +210,60 @@ const commandItems = await Promise.all(
         <slot />
       </main>
       <NewsletterInput client:load />
-      <footer
-        class="text-parchment-400 flex w-full items-center justify-center gap-3 px-4 pt-24 pb-6 text-center text-sm font-medium sm:px-0"
-      >
-        <span>
-          <span>©{currentYear}</span>
-          <a
-            href="https://interfaceoffice.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-parchment-400 hover:text-parchment-900"
-          >
-            Interface Office
-          </a>
-        </span>
-        {llmsPath ? <span class="text-parchment-200">·</span> : null}
-        {
-          llmsPath ? (
-            <a href={llmsPath} class="hover:text-parchment-900">
-              llms.txt
+      <footer class="mt-24 border-t border-parchment-200">
+        <div class="mx-auto w-full max-w-3xl px-4 py-12 sm:px-8 sm:py-16">
+          <div class="max-w-2xl">
+            <p class="text-parchment-900 text-base font-medium leading-snug">
+              Built by Interface Office.
+            </p>
+            <p class="text-parchment-600 mt-3 text-base leading-snug text-pretty">
+              We design and build high-quality AI interfaces, design systems, and product experiences for ambitious teams.
+            </p>
+            <p class="text-parchment-600 mt-3 text-base leading-snug text-pretty">
+              If you’re building with agents and care about interface quality, we can help.
+            </p>
+          </div>
+
+          <div class="mt-8 flex flex-wrap gap-x-4 gap-y-2 text-base leading-snug">
+            <a href="/" class="text-parchment-700 hover:text-parchment-900">
+              Home
             </a>
-          ) : null
-        }
+            <a href="/skills" class="text-parchment-700 hover:text-parchment-900">
+              Skills
+            </a>
+            <a href="/skills/topics" class="text-parchment-700 hover:text-parchment-900">
+              Topics
+            </a>
+            {
+              llmsPath ? (
+                <a href={llmsPath} class="text-parchment-700 hover:text-parchment-900">
+                  llms.txt
+                </a>
+              ) : null
+            }
+            <a
+              href="https://github.com/ibelick/ui-skills"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-parchment-700 hover:text-parchment-900"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://interfaceoffice.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-parchment-700 hover:text-parchment-900"
+            >
+              Interface Office
+            </a>
+          </div>
+
+          <div class="mt-8 flex flex-col gap-2 text-base leading-snug text-parchment-400 sm:flex-row sm:items-center sm:justify-between">
+            <p>©{currentYear} Interface Office</p>
+            <p>Designed for humans and agents.</p>
+          </div>
+        </div>
       </footer>
     </div>
   </body>
