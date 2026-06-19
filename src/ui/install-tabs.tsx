@@ -82,7 +82,7 @@ export function InstallTabs() {
         </div>
       </div>
       <div className="border-parchment-200 flex items-center justify-between border-t py-3.5 pr-4 pl-6">
-        <code className="font-mono text-[15px]">{activeTab.content}</code>
+        <code className="font-mono text-base">{activeTab.content}</code>
         <div className="flex items-center gap-1">
           <CopyButton
             content={activeTab.command}
