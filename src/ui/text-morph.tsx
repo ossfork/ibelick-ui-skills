@@ -59,7 +59,7 @@ export function TextMorph({
   };
 
   return (
-    <Tag aria-label={children} style={style as React.CSSProperties}>
+    <Tag aria-label={children} className={className} style={style as React.CSSProperties}>
       <AnimatePresence mode="popLayout" initial={false}>
         {characters.map((character) => (
           <motion.span

@@ -143,7 +143,7 @@ export function CommandDialog({ items }: CommandDialogProps) {
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      const isMac = navigator.platform.toLowerCase().includes("mac");
+      const isMac = /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent);
       const isOpenHotkey = isMac
         ? event.metaKey && event.key.toLowerCase() === "k"
         : event.ctrlKey && event.key.toLowerCase() === "k";

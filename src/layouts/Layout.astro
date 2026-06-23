@@ -140,12 +140,13 @@ const commandItems = await Promise.all(
     {
       structuredData ? (
         <script
+          is:inline
           type="application/ld+json"
           set:html={JSON.stringify(structuredData)}
         />
       ) : null
     }
-    <script defer src="https://assets.onedollarstats.com/stonks.js"></script>
+    <script is:inline defer src="https://assets.onedollarstats.com/stonks.js"></script>
   </head>
   <body>
     <a
