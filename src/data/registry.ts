@@ -1540,8 +1540,10 @@ const registrySource: RegistrySourceSkill[] = [
     slug: "build-primitive",
     user: "PrototyperAI",
     repo: "prototyper-ui",
-    rawUrl: "https://prototyper-ui.com/skills/build-primitive",
-    githubUrl: "https://github.com/PrototyperAI/prototyper-ui",
+    rawUrl:
+      "https://raw.githubusercontent.com/PrototyperAI/prototyper-ui/main/apps/docs/skill/build-primitive/SKILL.md",
+    githubUrl:
+      "https://github.com/PrototyperAI/prototyper-ui/blob/main/apps/docs/skill/build-primitive/SKILL.md",
     name: "build-primitive",
     topics: ["accessibility", "interaction", "systems", "testing", "frontend"],
     description:

@@ -177,7 +177,7 @@ const breadcrumbItems = [
     return {
       label:
         isLast && skill
-          ? skill.label
+          ? skill.name
           : (matchedSkill?.label ?? titleize(segment)),
       href: isLast ? undefined : `/skills/${currentPath}`,
     };
@@ -260,14 +260,14 @@ const shorten = (value: string, max = 160) =>
 
 const buildSkillTitle = (entry: Skill) => {
   const source = entry.sourceLabel ?? "Community";
-  return `${entry.label} Skill - ${source} | UI Skills`;
+  return `${entry.name} Skill - ${source} | UI Skills`;
 };
 
 const buildSkillDescription = (entry: Skill) => {
   const source = entry.sourceLabel ?? "the community";
   const description =
     entry.description ??
-    `Install ${entry.label} from ${source} with a copy-ready command and practical usage guidance.`;
+    `Install ${entry.name} from ${source} with a copy-ready command and practical usage guidance.`;
 
   return shorten(`${description} Install from ${source} in one command.`);
 };
@@ -294,7 +294,7 @@ const structuredData = skill
   ? {
       "@context": "https://schema.org",
       "@type": "TechArticle",
-      headline: skill.label,
+      headline: skill.name,
       description:
         skill.description ?? "Install this skill with a single command.",
       url: pageUrl,
@@ -532,7 +532,7 @@ const commandSegments = (() => {
                 <div class="mt-3 flex items-start justify-between gap-3">
                   <div class="flex items-center gap-2">
                     <h1 class="text-parchment-900 text-3xl font-medium tracking-tight">
-                      {skill.label}
+                      {skill.name}
                     </h1>
                     {githubUrl ? (
                       <a
