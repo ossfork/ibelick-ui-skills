@@ -1773,7 +1773,7 @@ const registrySource: RegistrySourceSkill[] = [
     user: "cursor",
     repo: "plugins",
     rawUrl:
-      "https://www.skills.sh/cursor/plugins/thermo-nuclear-code-quality-review",
+      "https://raw.githubusercontent.com/cursor/plugins/main/thermos/skills/thermo-nuclear-code-quality-review/SKILL.md",
     githubUrl: "",
     name: "thermo-nuclear-code-quality-review",
     topics: ["code-quality", "architecture", "testing"],
