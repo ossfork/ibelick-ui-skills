@@ -2,7 +2,7 @@
 
 ## Site Rules
 
-- Use the parchment neutral scale for text, borders, and surfaces.
+- Use the parchment neutral scale for text and borders. Use white surfaces for elevated or focused components such as cards, code blocks, dialogs, inputs, and navigation controls when it improves separation and contrast.
 - Prefer `text-base` for body copy
 - Use `text-lg` for section copy and `text-3xl` for major headings.
 - Keep headings `font-medium` with `tracking-tight` where appropriate.
