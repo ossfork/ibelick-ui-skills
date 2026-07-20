@@ -4,13 +4,23 @@ import CodeBlock from "../../ui/code-block.astro";
 import { skills, type Skill } from "../../data/skills";
 import { topicBySlug, relatedTopicSlugs } from "../../data/topics";
 import type { TopicSlug } from "../../data/registry";
-import { registry, type RegistrySkill } from "../../data/registry";
 import SkillContentCard from "../../ui/skill-content-card.astro";
 import Breadcrumbs from "../../ui/breadcrumbs.astro";
 import SkillCard from "../../ui/skill-card.astro";
 import SkillNav from "../../ui/skill-nav.astro";
 import TopicTag from "../../ui/topic-tag.astro";
 import { renderSkillMarkdown } from "../../lib/render-skill-markdown";
+import {
+  getRegistryByPath,
+  getSkillByPath,
+  getSkillBySourceAndSlug,
+  getSkillByTopicAndSlug,
+  getSkillsBySlug,
+  getSkillsBySource,
+  getSkillsByTopic,
+  getSkillRoutePaths,
+} from "../../lib/skill-catalog";
+import { getRemoteSkill } from "../../lib/remote-skill";
 
 const titleize = (value: string) =>
   value
@@ -19,62 +29,7 @@ const titleize = (value: string) =>
     .join(" ");
 
 export function getStaticPaths() {
-  const topicGroupPaths = Array.from(
-    new Set(skills.flatMap((skill) => skill.topics ?? [])),
-  );
-  const groupPaths = Array.from(
-    new Set(
-      skills.flatMap((skill: Skill) => {
-        const segments = skill.pathSlug.split("/");
-        if (segments.length <= 1) {
-          return [];
-        }
-
-        return segments
-          .slice(0, -1)
-          .map((_: string, index: number) =>
-            segments.slice(0, index + 1).join("/"),
-          );
-      }),
-    ),
-  );
-  const reservedSingleSegmentPaths = new Set([
-    ...topicGroupPaths,
-    ...groupPaths.filter((pathSlug) => !pathSlug.includes("/")),
-  ]);
-  const legacySingleSkillPaths = Array.from(
-    skills.reduce((acc, skill) => {
-      const matches = skills.filter(
-        (entry: Skill) => entry.slug === skill.slug,
-      );
-      if (matches.length === 1 && !reservedSingleSegmentPaths.has(skill.slug)) {
-        acc.add(skill.slug);
-      }
-      return acc;
-    }, new Set<string>()),
-  );
-
-  const pathSlugs = [
-    ...legacySingleSkillPaths.map((pathSlug) => ({
-      params: { slug: pathSlug },
-    })),
-    ...topicGroupPaths.map((pathSlug) => ({
-      params: { slug: pathSlug },
-    })),
-    ...groupPaths.map((pathSlug) => ({
-      params: { slug: pathSlug },
-    })),
-    ...skills.map((skill) => ({
-      params: { slug: skill.pathSlug },
-    })),
-    ...skills.map((skill) => ({
-      params: { slug: `${skill.sourceKey}/${skill.slug}` },
-    })),
-  ];
-
-  return Array.from(
-    new Map(pathSlugs.map((entry) => [entry.params.slug, entry])).values(),
-  );
+  return getSkillRoutePaths();
 }
 
 const routeSlug = Astro.params.slug ?? "";
@@ -84,44 +39,26 @@ const skillList: Skill[] = skills;
 const bucket = segments[0] ?? "";
 const leaf = segments[segments.length - 1] ?? "";
 const topic = topicBySlug.get(bucket as TopicSlug);
+const topicSlug = bucket as TopicSlug;
 const isTopicGroup = Boolean(topic) && segments.length === 1;
 const isOwnerGroup =
-  !topic &&
-  segments.length === 1 &&
-  skillList.some((entry: Skill) => entry.sourceKey === bucket);
+  !topic && segments.length === 1 && getSkillsBySource(bucket).length > 0;
 const singleSlugMatches =
-  segments.length === 1
-    ? skillList.filter((entry: Skill) => entry.slug === pathSlug)
-    : [];
+  segments.length === 1 ? getSkillsBySlug(pathSlug) : [];
 const uniqueSingleSlugMatch =
   singleSlugMatches.length === 1 ? singleSlugMatches[0] : undefined;
 const skill =
-  skillList.find((entry: Skill) => entry.pathSlug === pathSlug) ??
-  (segments.length === 2
-    ? skillList.find(
-        (entry: Skill) => entry.sourceKey === bucket && entry.slug === leaf,
-      )
-    : undefined) ??
+  getSkillByPath(pathSlug) ??
+  (segments.length === 2 ? getSkillBySourceAndSlug(bucket, leaf) : undefined) ??
   (Boolean(topic) && segments.length === 2
-    ? skillList.find(
-        (entry: Skill) =>
-          entry.slug === leaf && entry.topics?.includes(bucket as TopicSlug),
-      )
+    ? getSkillByTopicAndSlug(topicSlug, leaf)
     : undefined) ??
   (!isOwnerGroup ? uniqueSingleSlugMatch : undefined);
 
 const userChildren =
-  !topic && segments.length === 1
-    ? skillList.filter((entry: Skill) =>
-        entry.pathSlug.startsWith(`${bucket}/`),
-      )
-    : [];
+  !topic && segments.length === 1 ? getSkillsBySource(bucket) : [];
 
-const topicChildren = isTopicGroup
-  ? skillList.filter((entry: Skill) =>
-      entry.topics?.includes(bucket as TopicSlug),
-    )
-  : [];
+const topicChildren = isTopicGroup ? getSkillsByTopic(topicSlug) : [];
 
 const children = [
   ...(topicChildren.length ? topicChildren : userChildren),
@@ -158,9 +95,7 @@ const breadcrumbItems = [
   { label: "Skills", href: "/skills" },
   ...segments.map((segment: string, index: number) => {
     const currentPath = segments.slice(0, index + 1).join("/");
-    const matchedSkill = skillList.find(
-      (entry: Skill) => entry.pathSlug === currentPath,
-    );
+    const matchedSkill = getSkillByPath(currentPath);
     const isLast = index === segments.length - 1;
 
     return {
@@ -376,22 +311,18 @@ let displayContent = "";
 let githubUrl = "";
 
 if (skill) {
-  const registryEntry = registry.find(
-    (entry: RegistrySkill) => entry.pathSlug === skill.pathSlug,
-  );
+  const registryEntry = getRegistryByPath(skill.pathSlug);
 
   if (registryEntry) {
     try {
-      const response = await fetch(registryEntry.rawUrl);
-      if (response.ok) {
-        skillRaw = await response.text();
+      const remoteSkill = await getRemoteSkill(registryEntry.rawUrl);
+      if (remoteSkill) {
+        skillRaw = remoteSkill.content;
         githubUrl = registryEntry.githubUrl;
         displayContent = await renderSkillMarkdown(
           skillRaw,
           registryEntry.githubUrl,
         );
-      } else {
-        displayContent = `<p>Error: Failed to fetch skill content from ${registryEntry.rawUrl} (${response.status} ${response.statusText})</p>`;
       }
     } catch (e) {
       displayContent = `<p>Error: ${e instanceof Error ? e.message : String(e)}</p>`;
@@ -400,9 +331,7 @@ if (skill) {
 }
 
 const commandSegments = (() => {
-  const registryEntry = skill
-    ? registry.find((entry: RegistrySkill) => entry.pathSlug === skill.pathSlug)
-    : undefined;
+  const registryEntry = skill ? getRegistryByPath(skill.pathSlug) : undefined;
   const repoUrl = registryEntry
     ? `https://github.com/${registryEntry.user}/${registryEntry.repo}`
     : "https://github.com/ibelick/ui-skills";

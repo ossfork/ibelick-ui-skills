@@ -1,42 +1,44 @@
 import type { APIRoute } from "astro";
-import { skills } from "../../../data/skills";
-import { registry } from "../../../data/registry";
+import {
+  getCanonicalSkillPaths,
+  getRegistryByPath,
+  getSkillByPath,
+} from "../../../lib/skill-catalog";
+import { getRemoteSkill, RemoteSkillError } from "../../../lib/remote-skill";
 
 export function getStaticPaths() {
-  return skills.map((skill) => ({
-    params: { slug: skill.pathSlug },
-  }));
+  return getCanonicalSkillPaths();
 }
 
 export const GET: APIRoute = async ({ params }) => {
   const routeSlug = params.slug ?? "";
   const pathSlug = Array.isArray(routeSlug) ? routeSlug.join("/") : routeSlug;
-  const skillEntry = skills.find((skill) => skill.pathSlug === pathSlug);
+  const skillEntry = getSkillByPath(pathSlug);
 
   if (!skillEntry) {
     return new Response("Skill not found", { status: 404 });
   }
 
-  const registrySkill = registry.find((entry) => entry.pathSlug === pathSlug);
+  const registrySkill = getRegistryByPath(pathSlug);
   if (!registrySkill) {
     return new Response("Skill not found", { status: 404 });
   }
 
   try {
-    const response = await fetch(registrySkill.rawUrl);
-    if (!response.ok) {
-      const status = response.status === 404 ? 404 : 502;
-      return new Response("Skill source unavailable", { status });
-    }
-
-    const content = await response.text();
+    const { content } = await getRemoteSkill(registrySkill.rawUrl);
     return new Response(content, {
       headers: {
         "Content-Type": "text/plain; charset=utf-8",
         "X-Robots-Tag": "noindex, nofollow",
       },
     });
-  } catch {
-    return new Response("Error fetching registry skill", { status: 500 });
+  } catch (error) {
+    const status = error instanceof RemoteSkillError ? error.status : 500;
+    return new Response(
+      status === 404
+        ? "Skill source unavailable"
+        : "Error fetching registry skill",
+      { status },
+    );
   }
 };
