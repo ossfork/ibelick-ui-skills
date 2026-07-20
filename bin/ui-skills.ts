@@ -1,13 +1,31 @@
 #!/usr/bin/env -S node --experimental-strip-types
 
-import { readFile } from "node:fs/promises";
-import { registry } from "../src/data/registry.ts";
-import { skills } from "../src/data/skills.ts";
-import { topics, topicBySlug, type Topic } from "../src/data/topics.ts";
+export {};
+
+type RemoteSkill = {
+  slug: string;
+  pathSlug: string;
+  sourceKey: string;
+  sourceLabel: string;
+  name: string;
+  description: string;
+  topics?: string[];
+};
+
+type RemoteTopic = {
+  slug: string;
+  label: string;
+};
+
+type RegistryManifest = {
+  registry: RemoteSkill[];
+  topics: RemoteTopic[];
+};
 
 const argv = process.argv.slice(2);
 
-const START_SKILL_URL = new URL("../skills/ui-skills-root/SKILL.md", import.meta.url);
+const SITE_URL = process.env.UI_SKILLS_SITE_URL ?? "https://www.ui-skills.com";
+const REGISTRY_URL = new URL("/skills/registry.json", SITE_URL);
 
 const BANNER = [
   " ██╗   ██╗██╗      ███████╗██╗  ██╗██╗██╗     ██╗     ███████╗",
@@ -48,34 +66,46 @@ const failExtraArgs = (command: string) => {
   fail(`Too many arguments for ${command}`, 1);
 };
 
-const readLocalSkillMarkdown = async (slug: string) => {
-  try {
-    return await readFile(new URL(`../skills/${slug}/SKILL.md`, import.meta.url), "utf8");
-  } catch {
-    return null;
-  }
-};
-
-const printSkillMarkdown = async () => {
-  process.stdout.write(await readFile(START_SKILL_URL, "utf8"));
-};
-
 const fail = (message: string, code = 1) => {
   process.stderr.write(`${message}\n`);
   process.exitCode = code;
 };
 
-const formatTopic = (slug: Topic["slug"]) => {
-  return slug;
+const fetchRegistryManifest = async () => {
+  const response = await fetch(REGISTRY_URL);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch ${REGISTRY_URL} (${response.status} ${response.statusText})`,
+    );
+  }
+
+  return (await response.json()) as RegistryManifest;
 };
 
-const formatSkill = (skill: (typeof skills)[number]) => {
+const fetchSkillContent = async (pathSlug: string) => {
+  const skillUrl = new URL(
+    `/skills/${pathSlug.split("/").map(encodeURIComponent).join("/")}/llms.txt`,
+    SITE_URL,
+  );
+  const response = await fetch(skillUrl);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch ${skillUrl} (${response.status} ${response.statusText})`,
+    );
+  }
+
+  return response.text();
+};
+
+const formatTopic = (topic: RemoteTopic) => topic.slug;
+
+const formatSkill = (skill: RemoteSkill) => {
   const categories = (skill.topics ?? []).join(", ");
-  const description = (skill.description ?? "").replace(/\s+/g, " ").trim();
+  const description = skill.description.replace(/\s+/g, " ").trim();
   return `${skill.pathSlug} — ${categories} — ${description}`;
 };
 
-const resolveSkillCandidates = (input: string) => {
+const resolveSkillCandidates = (registry: RemoteSkill[], input: string) => {
   const normalizedInput = normalize(input);
   const exactPath = registry.find(
     (entry) => normalize(entry.pathSlug) === normalizedInput,
@@ -90,15 +120,17 @@ const resolveSkillCandidates = (input: string) => {
   return bySlug;
 };
 
-const printList = (category?: string) => {
+const printList = async (category?: string) => {
+  const { registry, topics } = await fetchRegistryManifest();
   const normalizedCategory = category ? normalize(category) : undefined;
+  const topicSlugs = new Set(topics.map((topic) => topic.slug));
   const filtered = category
-    ? skills.filter((skill) =>
-        skill.topics?.includes(normalizedCategory as Topic["slug"]),
+    ? registry.filter((skill) =>
+        skill.topics?.includes(normalizedCategory ?? ""),
       )
-    : skills;
+    : registry;
 
-  if (category && !topicBySlug.has(normalizedCategory as Topic["slug"])) {
+  if (category && !topicSlugs.has(normalizedCategory ?? "")) {
     fail(`Unknown category: ${category}`, 3);
     return;
   }
@@ -112,7 +144,8 @@ const printList = (category?: string) => {
 };
 
 const printGet = async (input: string) => {
-  const candidates = resolveSkillCandidates(input);
+  const { registry } = await fetchRegistryManifest();
+  const candidates = resolveSkillCandidates(registry, input);
 
   if (candidates.length === 0) {
     fail(`Skill not found: ${input}`, 3);
@@ -130,31 +163,18 @@ const printGet = async (input: string) => {
   }
 
   const skill = candidates[0];
-  try {
-    const localMarkdown = await readLocalSkillMarkdown(skill.slug);
-    if (localMarkdown) {
-      process.stdout.write(localMarkdown);
-      process.stdout.write("\n");
-      return;
-    }
-
-    const response = await fetch(skill.rawUrl);
-    if (!response.ok) {
-      fail(`Failed to fetch ${skill.rawUrl} (${response.status} ${response.statusText})`, 4);
-      return;
-    }
-
-    process.stdout.write(await response.text());
-    process.stdout.write("\n");
-  } catch (error) {
-    fail(`Error fetching skill content: ${error instanceof Error ? error.message : String(error)}`, 4);
-  }
+  process.stdout.write(await fetchSkillContent(skill.pathSlug));
 };
 
 const main = async () => {
   const [command = ""] = argv;
 
-  if (!command || command === "--help" || command === "-h" || command === "help") {
+  if (
+    !command ||
+    command === "--help" ||
+    command === "-h" ||
+    command === "help"
+  ) {
     print(HELP);
     return;
   }
@@ -165,7 +185,14 @@ const main = async () => {
       return;
     }
 
-    await printSkillMarkdown();
+    const { registry } = await fetchRegistryManifest();
+    const skill = resolveSkillCandidates(registry, "ui-skills-root")[0];
+    if (!skill) {
+      fail("Skill not found: ui-skills-root", 3);
+      return;
+    }
+
+    process.stdout.write(await fetchSkillContent(skill.pathSlug));
     return;
   }
 
@@ -175,7 +202,8 @@ const main = async () => {
       return;
     }
 
-    print(topics.map((topic) => formatTopic(topic.slug)).join("\n"));
+    const { topics } = await fetchRegistryManifest();
+    print(topics.map(formatTopic).join("\n"));
     return;
   }
 
@@ -183,7 +211,7 @@ const main = async () => {
     const args = argv.slice(1);
 
     if (args.length === 0) {
-      printList();
+      await printList();
       return;
     }
 
@@ -193,7 +221,7 @@ const main = async () => {
     }
 
     if (args.length === 2 && args[0] === "--category") {
-      printList(args[1]);
+      await printList(args[1]);
       return;
     }
 
@@ -202,7 +230,7 @@ const main = async () => {
       return;
     }
 
-    printList();
+    await printList();
     return;
   }
 
@@ -227,4 +255,9 @@ const main = async () => {
   fail(`Unknown command: ${command}`, 2);
 };
 
-await main();
+await main().catch((error) => {
+  fail(
+    `Error communicating with ui-skills.com: ${error instanceof Error ? error.message : String(error)}`,
+    4,
+  );
+});
