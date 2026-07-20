@@ -9,6 +9,14 @@ const securityHeaders = {
   "X-Frame-Options": "DENY",
 };
 
+const withSecurityHeaders = (response: Response) => {
+  const securedResponse = new Response(response.body, response);
+  Object.entries(securityHeaders).forEach(([key, value]) =>
+    securedResponse.headers.set(key, value),
+  );
+  return securedResponse;
+};
+
 export const onRequest = defineMiddleware((context, next) => {
   const url = new URL(context.request.url);
 
@@ -19,19 +27,10 @@ export const onRequest = defineMiddleware((context, next) => {
         ? 301
         : 308;
 
-    const response = Response.redirect(url, status);
-    Object.entries(securityHeaders).forEach(([key, value]) =>
-      response.headers.set(key, value),
-    );
-    return response;
+    return withSecurityHeaders(Response.redirect(url, status));
   }
 
   return next().then((response) => {
-    if (response) {
-      Object.entries(securityHeaders).forEach(([key, value]) =>
-        response.headers.set(key, value),
-      );
-    }
-    return response;
+    return response ? withSecurityHeaders(response) : response;
   }) as Promise<Response>;
 });
