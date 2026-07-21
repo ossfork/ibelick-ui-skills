@@ -76,6 +76,19 @@ const registrySource: RegistrySourceSkill[] = [
       "Quickly deslop UI code by fixing spacing, hierarchy, typography, and small layout issues. Use when the interface needs a fast cleanup or polish pass.",
   },
   {
+    slug: "create-design-md",
+    user: "ibelick",
+    repo: "ui-skills",
+    rawUrl:
+      "https://raw.githubusercontent.com/ibelick/ui-skills/main/skills/create-design-md/SKILL.md",
+    githubUrl:
+      "https://github.com/ibelick/ui-skills/blob/main/skills/create-design-md/SKILL.md",
+    name: "create-design-md",
+    topics: ["systems", "tooling", "visual"],
+    description:
+      "Create or update a DESIGN.md from an existing product repository or public website, with evidence-based design tokens and guidance.",
+  },
+  {
     slug: "design-first-ui-prompting",
     user: "MengTo",
     repo: "Skills",
