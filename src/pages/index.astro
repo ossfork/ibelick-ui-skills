@@ -92,36 +92,81 @@ const displayedSkills = FEATURED_PATH_SLUGS.map((pathSlug) =>
 
         <div class="bg-parchment-200/40 rounded-[12px] p-4 sm:p-5">
           <h2 class="text-parchment-900 text-base font-medium text-balance">
-            How to use
+            Agent, start here.
           </h2>
           <p
             class="text-parchment-600 mt-3 max-w-2xl text-base leading-snug text-pretty"
           >
-            Ask your agent to run the CLI first so it can choose the right skill
-            before making changes.
+            You are working on a UI task. Before reading or changing code, run:
           </p>
           <div class="mt-4 flex w-full">
             <CodeBlock
               className="w-full"
-              align="center"
               mobileSurface
               wrapOnMobile
               lines={[
                 [
                   {
-                    text: "Run `npx ui-skills start` to fix this dialog motion.",
+                    text: "npx",
+                    className: "text-[#953800]",
+                  },
+                  {
+                    text: " ui-skills start",
+                    className: "text-[#0550ae]",
+                  },
+                ],
+                [
+                  {
+                    text: "npx",
+                    className: "text-[#953800]",
+                  },
+                  {
+                    text: " ui-skills categories",
+                    className: "text-[#0550ae]",
+                  },
+                ],
+                [
+                  {
+                    text: "npx",
+                    className: "text-[#953800]",
+                  },
+                  {
+                    text: " ui-skills list --category",
+                    className: "text-[#0550ae]",
+                  },
+                  {
+                    text: " <category>",
+                    className: "text-parchment-400",
+                  },
+                ],
+                [
+                  {
+                    text: "npx",
+                    className: "text-[#953800]",
+                  },
+                  {
+                    text: " ui-skills get",
+                    className: "text-[#0550ae]",
+                  },
+                  {
+                    text: " <skill>",
+                    className: "text-parchment-400",
                   },
                 ],
               ]}
-              copyContent="Run `npx ui-skills start` to fix this dialog motion."
+              copyContent={`npx ui-skills start
+npx ui-skills categories
+npx ui-skills list --category <category>
+npx ui-skills get <skill>`}
             />
           </div>
 
           <p
             class="text-parchment-600 mt-4 max-w-2xl text-base leading-snug text-pretty"
           >
-            Or browse the collection below to find the best design-engineering
-            skills.
+            Start with <code class="text-[0.875em]">npx ui-skills start</code>.
+            Load the smallest relevant skill, then implement. Do not choose
+            manually from the collection below.
           </p>
         </div>
 
