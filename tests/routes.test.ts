@@ -63,4 +63,16 @@ describe("route boundaries", () => {
     assert.match(html, /https:\/\/github.com\/example\/repo\/blob\/docs/);
     assert.match(html, /unsafe<\/p>/);
   });
+
+  test("renders fenced code as styled, escaped code blocks", async () => {
+    const html = await renderSkillMarkdown(
+      "```markdown\n<script>alert(1)</script>\n```",
+      "https://github.com/example/repo/blob/main/SKILL.md",
+    );
+
+    assert.match(html, /class="skill-code-block"/);
+    assert.match(html, /class="language-markdown"/);
+    assert.match(html, /&lt;script&gt;alert\(1\)&lt;\/script&gt;/);
+    assert.doesNotMatch(html, /<script>/);
+  });
 });
