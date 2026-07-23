@@ -41,6 +41,13 @@ export const renderSkillMarkdown = async (
 
   renderer.html = () => "";
   renderer.image = () => "";
+  renderer.code = ({ text, lang }) => {
+    const languageClass = lang
+      ? ` language-${escapeHtml(lang.trim().split(/\s+/)[0] ?? "")}`
+      : "";
+
+    return `<pre class="skill-code-block"><code class="${languageClass.trim()}">${escapeHtml(text)}</code></pre>`;
+  };
   renderer.link = function ({ href, title, tokens }) {
     const text = this.parser.parseInline(tokens);
     const safeUrl = getSafeUrl(href, baseUrl);
