@@ -2430,6 +2430,19 @@ const registrySource: RegistrySourceSkill[] = [
     description:
       "Generate quiet minimal zine-style editorial poster prompts and matching raster images from themes, moods, objects, photos, or content briefs.",
   },
+  {
+    slug: "signal-geometry",
+    user: "CaliCastle",
+    repo: "skills",
+    rawUrl:
+      "https://raw.githubusercontent.com/CaliCastle/skills/main/skills/signal-geometry/SKILL.md",
+    githubUrl:
+      "https://github.com/CaliCastle/skills/blob/main/skills/signal-geometry/SKILL.md",
+    name: "signal-geometry",
+    topics: ["visual", "craft"],
+    description:
+      "Create sparse geometric illustrations and posters from concepts or briefs, using precise spatial systems, restrained contrast, and matte paper texture.",
+  },
 ];
 
 const buildInitialPathSlug = (entry: RegistrySourceSkill) => {
